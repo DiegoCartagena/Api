@@ -28,7 +28,6 @@ class VentasController extends Controller{
         $this->username   = 'samurai';
         $this->password   = 'Axam2021';
         $this->rut   = '76299574-3';
-        //$this->code = $request->code;
         $this->url = 'https://axam.managermas.cl/';
         $this->setSale($request);
     }
@@ -36,7 +35,7 @@ class VentasController extends Controller{
         
         //dd($request);
         $this->setInnerUrl($this->url);
-       // dd($this->trySave($request));
+       //dd($this->trySave($request));
         return $this->trySave($request);
         
     }
