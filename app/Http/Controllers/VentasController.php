@@ -36,7 +36,7 @@ class VentasController extends Controller{
         //dd($request);
         $this->setInnerUrl($this->url);
        //dd($this->trySave($request));
-        return $this->trySave($request);
+        return json_encode($this->trySave($request));
         
     }
  //login() para obtener token de manager+
@@ -293,8 +293,8 @@ class VentasController extends Controller{
         ));
  
         $response = curl_exec($curl);
-        //dd($response);
-      return $response;
+        dd($response);
+      return json_decode($response);
       
 
       

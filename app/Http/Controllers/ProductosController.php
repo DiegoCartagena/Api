@@ -112,10 +112,10 @@ class ProductosController extends Controller{
           
         
         $codigo = $products->cod;
-        if($products->cod!="KAR-1.198-282.0" && $products->cod !="KAR-1.673-003.0"){
+        //if($products->cod!="KAR-1.198-282.0" && $products->cod !="KAR-1.673-003.0"){
 
             $stock = $this->getStock($products->cod);
-        }
+        //}
          
         
         $response[$key]['id'] = $products->cod;
