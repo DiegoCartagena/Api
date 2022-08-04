@@ -2,7 +2,7 @@
 
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
-
+use App\Http\Controllers\WebhookShopify;
 /*
 |--------------------------------------------------------------------------
 | Console Routes

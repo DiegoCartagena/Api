@@ -58,8 +58,8 @@ class ProductosController extends Controller{
             if($res->getStatusCode() == 200){
                 $body = json_decode($res->getBody());
                 $authToken = $body->auth_token;
-                //dd($token);
                 $this->setIdSesson($authToken);
+                return ($authToken);
                 
             }
             
@@ -87,7 +87,7 @@ class ProductosController extends Controller{
             ]);
             if($res->getStatusCode() == 200){
                 $body = json_decode($res->getBody());
-               // dd($body->data);
+                //dd($res->getBody());
               return  $this->fillResponse($body);    
            
             
@@ -96,7 +96,7 @@ class ProductosController extends Controller{
     }
   
     public function fillResponse($res){
-           //dd($res->data);
+          // dd($res->data);
       $products = $res->data;
       $response=[];
       $lista=[];
@@ -112,10 +112,10 @@ class ProductosController extends Controller{
           
         
         $codigo = $products->cod;
-        //if($products->cod!="KAR-1.198-282.0" && $products->cod !="KAR-1.673-003.0"){
+        if($products->cod!="KAR-1.198-282.0" && $products->cod !="KAR-1.673-003.0"){
 
             $stock = $this->getStock($products->cod);
-        //}
+        }
          
         
         $response[$key]['id'] = $products->cod;

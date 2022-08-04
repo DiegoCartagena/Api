@@ -2,14 +2,10 @@
 
 namespace App\Http\Controllers;
 
-//namespace App\Http\Packages\ManagerPlus;
-
 use App\Http\Controllers\Controller;
-
-use App\Http\Packages\Url;
 use Illuminate\Http\Request as RequestParams;
 use GuzzleHttp\Client;
-//use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\Psr7\Request;
 use Exception;
 
 class VentasController extends Controller{
@@ -24,7 +20,7 @@ class VentasController extends Controller{
     private $counter = 0;
 
     function __construct(RequestParams $request) {
-        $this->client = new Client(['verify' => false]);
+        $this->client = new Client(['verify' => true]);
         $this->username   = 'samurai';
         $this->password   = 'Axam2021';
         $this->rut   = '76299574-3';
@@ -32,11 +28,11 @@ class VentasController extends Controller{
         $this->setSale($request);
     }
     public function setSale(RequestParams $request){
-        
-        //dd($request);
-        $this->setInnerUrl($this->url);
-       //dd($this->trySave($request));
-        return json_encode($this->trySave($request));
+      //dd(json_decode($this->trySave($request)));
+        $res=json_decode($this->trySave($request));
+        $response['retorno']=$res->retorno;
+        $response['mensaje']=$res->mensaje;
+        return json_encode($response);
         
     }
  //login() para obtener token de manager+
@@ -254,28 +250,33 @@ class VentasController extends Controller{
         $fields = substr($fields, 0, -1);
         $fields .= "
                 \r\n  ]}";
-   
-      
-        /*$pathFile = 'usr/public/log';
-            if (!file_exists($pathFile)) {	
-                mkdir($pathFile, 0755, true);
-            }
-            
-        $pathFile .= '/getSaveEnvioManager-' . $this->rut . '-'. date("dmYHis") . '.log';
-        
-        file_put_contents($pathFile, $fields);
-        */
+    
             //dd($this->sale($fields));
-        return $this->sale($fields);
+            $response=$this->sale($fields);
+             
+        return json_encode($response);
    
     }
   //Envio de formato Json hacia Manager+
    public function sale($fields){
    
         $this->login();
-        $curl = curl_init();
+        //$curl = curl_init();
         //$url = $this->getInnerUrl()->getUrl();
-     
+      $res= $this->client->request('POST',$this->url.'api/import/create-document/?emitir=N&docnumreg=N',[
+            'headers'=>[
+                'Authorization' => "token ".$this->idSesson,
+                'Content-Type' => 'application/json',
+            ],
+            'body'=> $fields
+            ]);
+           // dd($res->getBody()->getContents());
+                $response = json_decode($res->getBody()->getContents(), true);
+                //dd($response);
+              return  $response;    
+           
+            
+        } /*
         curl_setopt_array($curl, array(
             CURLOPT_URL => "$this->url"."api/import/create-document/?emitir=N&docnumreg=N",
             CURLOPT_RETURNTRANSFER => true,
@@ -293,12 +294,13 @@ class VentasController extends Controller{
         ));
  
         $response = curl_exec($curl);
-        dd($response);
-      return json_decode($response);
+        //dd(json_decode($response));
+            return json_decode($response);*/
+        
       
 
       
-    }
+    
   //get cliente // If existe retorna RUT y Direccion // else crea nuevo cliente, retorna RUT y Direccion ingresados recientemente
   //No ingresa venta si no existe rut registrado en M+
    public function getClientInfo($rut_cliente, $request, $params){
@@ -341,17 +343,17 @@ class VentasController extends Controller{
             //dd($request->client['address'][0]['city']);
             return $this->saveClient($rut_cliente, $firstName, $lastName, $razon_social, $giro, $dire_cliente, $email, $telefono, $comuna, $ciudad, $params);
         }else{
-            $firstName = $request->cliente['firstName'];
-            $lastName = $request->cliente['lastName'];
+            $firstName = $request->cliente['nombre'];
+            $lastName = $request->cliente['apellido'];
             $razon_social = $request->cliente['razonSocial'];
             $giro = $request->cliente['giro'];
             $email = $request->cliente['email'];
-            $telefono = $request->cliente['phone'];
+            $telefono = $request->cliente['telefono'];
             $dire_cliente = $request->cliente['direccion'][0]['direccion'] . ' ' . $request->cliente['direccion'][0]['numero'] . ', ' .       $request->cliente['direccion'][0]['municipalidad'];
             $comuna =  $request->cliente['direccion'][0]['municipalidad'];
-            $ciudad =  $request->client['direccion'][0]['ciudad']; //Samurai no envia parametro city.
+            //$ciudad =  $request->client['direccion'][0]['ciudad']; //Samurai no envia parametro city.
           //dd($ciudad);
-            //$ciudad = "Santiago";//Parametro provisorio
+            $ciudad = "Santiago";//Parametro provisorio
          
             return $this->saveClient($rut_cliente, $firstName, $lastName, $razon_social, $giro, $dire_cliente, $email, $telefono, $comuna, $ciudad, $params);
           

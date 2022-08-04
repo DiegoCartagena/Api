@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProductosController;
 use App\Http\Controllers\VentasController;
+use App\Http\Controllers\WebhookShopify;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -18,4 +19,5 @@ Route::get('/', function () {
     return view('welcome');
 });
 Route::get('/getProductos',[ProductosController::class,'getProductos']);
+Route::get('/webhook',[WebhookShopify::class,'productos']);
 Route::post('/sale',[VentasController::class,'setSale']);
