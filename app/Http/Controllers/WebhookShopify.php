@@ -97,11 +97,7 @@ class WebhookShopify extends Controller{
                     if($product->id==$prod->variants[0]->sku){
                         $body ='{
                             "product":{
-                                "price":'.$product->price.',
-                                "variants": [
-                                    {
-                                    "inventory_quantity":'.$product->stock[0]->quantity.' ,
-                                    } ]
+                                "price":'.$product->price.'
                             }';
                         $res= $this->client->request('PUT',$this->url."admin/products/".$prod->id.".json",[
                             'headers'=>[
