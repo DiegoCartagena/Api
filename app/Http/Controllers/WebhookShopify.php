@@ -3,10 +3,9 @@
 namespace App\Http\Controllers;
 
 use Shopify\Rest\Admin2022_07\Product;
-use Shopify\Utils;
+use Illuminate\Http\Request as RequestParams;
 use GuzzleHttp\Client;
-use GuzzleHttp\Cookie\CookieJar;
-use GuzzleHttp\Cookie\SetCookie;
+use App\Http\Controllers\ProductosController;
 use Shopify\ApiVersion;
 use Shopify\Auth\Session;
 use GuzzleHttp\Psr7\Request;
@@ -21,13 +20,15 @@ class WebhookShopify extends Controller{
     public $token;
     public $client;
     //public $response=[];
+    public $manager;
     public $url;
     
-    function __construct() {
+    function __construct(RequestParams $request) {
         $this->url='https://multitienda-en-linea.myshopify.com/';
         $this->client = new Client(['verify' => false]);
         $this->token = "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";
         //$this->request=$request;
+        $this->manager=new ProductosController($request) ;
         $this->productos();
         //$this->update();
     }
@@ -35,7 +36,7 @@ class WebhookShopify extends Controller{
     public function productos(){
         
         
-        $session=new Session('1','https://multitienda-en-linea',true,ApiVersion::LATEST);
+      /*  $session=new Session('1','https://multitienda-en-linea',true,ApiVersion::LATEST);
         //$load=$storage->loadSession('1');
         //$client=new Rest($this->url,$this->token);
         
@@ -69,35 +70,50 @@ class WebhookShopify extends Controller{
         //    dd($orden[0]->id);
         }
         $productosShopi=json_decode($res->getBody()->getContents());
-        dd($productosShopi);
+        //dd($productosShopi);
         /*$webhook=$this->client->request('GET',$this->url.'admin/api/2022-07/webhooks.json',[
             'headers'=>[
                 'Content-Type' => 'application/json',
                 'X-Shopify-Access-Token'=>$this->token
             ]
             
-        ]);*/
-        return $resp->getBody()->getContents();
+        ]);
+        return $resp->getBody()->getContents();*/
     }
     public function update(){
-        
-         $session = $this->client->request('GET',$this->url,[
+        $res= $this->client->request('GET',$this->url.'admin/products.json',[
             'headers'=>[
                 'Content-Type' => 'application/json',
                 'X-Shopify-Access-Token'=>$this->token
-            ]]); // Provided by the shopify.auth middleware, guaranteed to be active
-            $cookie=['SHOPIFY_API_KEY'=>env('SHOPIFY_API_KEY'),
-                'SHOPIFY_API_SECRET'=>env('SHOPIFY_API_SECRET'),
-                'SHOPIFY_APP_SCOPES'=>env('SHOPIFY_APP_SCOPES'),
-                'SHOPIFY_APP_HOST_NAME'=>env('SHOPIFY_APP_HOST_NAME')];
-                $session = OAuth::callback(
-                    $cookie,//cookie('laravel',$cookie,400,'app',$this->url,false,true),
-                    $query=['laravel'=>'laravel'],
-                    ['App\Lib\CookieHandler', 'saveShopifyCookie'],true
-                );
-                dd($session);
-    $client = new Rest($session->getShop(), $session->getAccessToken());
-    $result = $client->get('products', [], ['limit' => 5]);
+            ],
+        ]);
+        $productos = json_decode($res->getBody()->getContents());
+        
+        $productosManager= json_decode($this->manager->getProductos());
+        
+        foreach ($productos as $key => $producto) {
+            foreach ($producto as $i => $prod) {
+                foreach ($productosManager as $j => $product) {
+                    if($product->id==$prod->variants[0]->sku){
+                        $body ='{
+                            "product":{
+                                "price":'.$product->price.',
+                                "variants": [
+                                    {
+                                    "inventory_quantity":'.$product->stock[0]->quantity.' ,
+                                    } ]
+                            }';
+                        $res= $this->client->request('PUT',$this->url."admin/products/".$prod->id.".json",[
+                            'headers'=>[
+                                'Content-Type' => 'application/json',
+                                'X-Shopify-Access-Token'=>$this->token
+                            ],"body"=>$body
+                        ]);
+                        return $res->getBody()->getContents();
+                    }
+                }
+            }
+        }
         
     }
 }   
