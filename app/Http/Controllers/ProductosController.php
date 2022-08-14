@@ -23,12 +23,12 @@ class ProductosController extends Controller{
     public $response=[];
     private $counter = 0;
 
-    function __construct(RequestParams $request) {
+    function __construct() {
         $this->client = new Client(['verify' => false]);
         $this->username   = 'samurai';
         $this->password   = 'Axam2021';
         $this->rut   = '76299574-3';
-        $this->code = $request->code;
+        //$this->code = $request->code;
         $this->url = 'https://axam.managermas.cl/';
         $this->setInnerUrl($this->url);
         $this->getProductos($this->url);
@@ -165,7 +165,7 @@ class ProductosController extends Controller{
         //dd($response->data[0]->stock[0]->bodega_stock);    
      
         if(empty($response->data)){
-          return null;
+          return 0;
         }else{
           foreach($response->data[0]->stock as $stock){
             //dd($value['']['nombre_bodega_stock']);

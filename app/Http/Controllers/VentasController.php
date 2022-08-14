@@ -14,18 +14,19 @@ class VentasController extends Controller{
     private $codigoProducto;
     private $innerUrl;
     private $code;
+    private $request;
     public $client;
     public $responseString;
     public $response=[];
     private $counter = 0;
 
-    function __construct(RequestParams $request) {
+    function __construct() {
         $this->client = new Client(['verify' => true]);
         $this->username   = 'samurai';
         $this->password   = 'Axam2021';
         $this->rut   = '76299574-3';
         $this->url = 'https://axam.managermas.cl/';
-        $this->setSale($request);
+        //$this->setSale( \Illuminate\Http\Request $request);
     }
     public function setSale(RequestParams $request){
       //dd(json_decode($this->trySave($request)));
@@ -330,27 +331,27 @@ class VentasController extends Controller{
 
         
         if(!empty($response['data'])){
-            $firstName = $request->cliente['nombre'];
-            $lastName = $request->cliente['apellido'];
+            $firstName = $request['cliente']['nombre'];
+            $lastName = $request['cliente']['apellido'];
             $razon_social = $response['data'][0]['razon_social'];
             $giro = $response['data'][0]['giro'];
             $email = $response['data'][0]['email'];
-            $telefono = $request->cliente['telefono'];
+            $telefono = $request['cliente']['telefono'];
             $dire_cliente = $response['data'][0]['direccion'];
-            $comuna =  $request->cliente['direccion'][0]['municipalidad'];
-            $ciudad =  $request->cliente['direccion'][0]['ciudad'];
+            $comuna =  $request['cliente']['direccion'][0]['municipalidad'];
+            $ciudad =  $request['cliente']['direccion'][0]['ciudad'];
             //dd($response);
             //dd($request->client['address'][0]['city']);
             return $this->saveClient($rut_cliente, $firstName, $lastName, $razon_social, $giro, $dire_cliente, $email, $telefono, $comuna, $ciudad, $params);
         }else{
-            $firstName = $request->cliente['nombre'];
-            $lastName = $request->cliente['apellido'];
-            $razon_social = $request->cliente['razonSocial'];
-            $giro = $request->cliente['giro'];
-            $email = $request->cliente['email'];
-            $telefono = $request->cliente['telefono'];
-            $dire_cliente = $request->cliente['direccion'][0]['direccion'] . ' ' . $request->cliente['direccion'][0]['numero'] . ', ' .       $request->cliente['direccion'][0]['municipalidad'];
-            $comuna =  $request->cliente['direccion'][0]['municipalidad'];
+            $firstName = $request['cliente']['nombre'];
+            $lastName = $request['cliente']['apellido'];
+            $razon_social = $request['cliente']['razonSocial'];
+            $giro = $request['cliente']['giro'];
+            $email = $request['cliente']['email'];
+            $telefono = $request['cliente']['telefono'];
+            $dire_cliente = $request['cliente']['direccion']['direccion'] . ' ' . $request['cliente']['direccion']['numero'] . ', ' .       $request['cliente']['direccion']['municipalidad'];
+            $comuna =  $request['cliente']['direccion']['municipalidad'];
             //$ciudad =  $request->client['direccion'][0]['ciudad']; //Samurai no envia parametro city.
           //dd($ciudad);
             $ciudad = "Santiago";//Parametro provisorio

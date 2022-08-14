@@ -8,15 +8,18 @@ use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
 class Kernel extends ConsoleKernel
 {
-    /**
-     * Define the application's command schedule.
-     *
+
+    protected $commands = [
+        \App\Console\Commands\Ventas::class,
+        
+    ];
+    /** 
      * @param  \Illuminate\Console\Scheduling\Schedule  $schedule
      * @return void
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
+        // $schedule->command('salesSync')->everyMinutes();
         //$schedule->command('webhookShopify:productos')->everyTwoHours();
     }
 
@@ -27,7 +30,7 @@ class Kernel extends ConsoleKernel
      */
     protected function commands()
     {
-        //WebhookShopify::class;
+       
         $this->load(__DIR__.'/Commands');
 
         require base_path('routes/console.php');

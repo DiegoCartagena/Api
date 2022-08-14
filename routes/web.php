@@ -19,5 +19,6 @@ Route::get('/', function () {
     return view('welcome');
 });
 Route::get('/getProductos',[ProductosController::class,'getProductos']);
-Route::get('/webhook',[WebhookShopify::class,'update']);
+Route::get('/update',[WebhookShopify::class,'update']);
+Route::get('/webhook/venta',[WebhookShopify::class,'sale']);
 Route::post('/sale',[VentasController::class,'setSale']);
